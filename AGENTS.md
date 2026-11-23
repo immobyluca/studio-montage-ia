@@ -46,11 +46,11 @@ Choisis un dossier simple, par exemple Documents :
 
 Mac :
 ```bash
-cd ~/Documents && git clone https://github.com/P7blito/studio-montage-ia studio-montage-ia && cd studio-montage-ia
+cd ~/Documents && git clone https://github.com/immobyluca/studio-montage-ia studio-montage-ia && cd studio-montage-ia
 ```
 Windows (PowerShell) :
 ```powershell
-cd $HOME\Documents; git clone https://github.com/P7blito/studio-montage-ia studio-montage-ia; cd studio-montage-ia
+cd $HOME\Documents; git clone https://github.com/immobyluca/studio-montage-ia studio-montage-ia; cd studio-montage-ia
 ```
 Sans Git : sur la page GitHub, bouton « Code » puis « Download ZIP », dézipper dans Documents, renommer le dossier `studio-montage-ia`.
 
