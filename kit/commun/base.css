@@ -80,7 +80,7 @@ body { font-family: "Texte", system-ui, sans-serif; color: var(--texte); -webkit
 .cta { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 40px 28px; text-align: center; }
 .cta .grand { font-size: 52px; line-height: 1.08; }
 .cta .ico-grand { font-size: 64px; }
-.signature { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.signature { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 80px; box-sizing: border-box; text-align: center; }
 .signature img { max-width: 360px; max-height: 220px; object-fit: contain; }
 .signature .nom { font-size: 56px; }
 .signature .compte { font-size: 36px; opacity: .75; }

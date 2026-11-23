@@ -1,10 +1,14 @@
 // Transcription mot à mot du rush (Whisper, sur ton ordinateur, rien n'est envoyé en ligne).
 // Usage : node outils/transcrire.mjs <video> [--modele small|medium] [--langue fr] [--pause 0.45] [--seuil -45]
 //
-// Méthode (testée sur des rushs de 8 min avec beaucoup de reprises) :
+// Méthode (testée sur des rushs de 6 et 8 min, voix basse, beaucoup de reprises) :
 //  1. On mesure le son : un « bloc » = un passage parlé, séparé du suivant par un silence d'au moins --pause s.
 //     Le seuil de silence est calé sur le volume de ta voix (20 dB sous elle).
-//  2. Chaque bloc est transcrit SÉPARÉMENT (modèle chargé une seule fois). Sur un long rush, Whisper décale
+//     Voix basse dans une pièce bruyante : le bruit de fond peut dépasser ce seuil, et plusieurs reprises se
+//     collent alors en un seul long bloc. Chaque bloc de plus de 5 s est donc revérifié avec un seuil 6 dB
+//     plus haut, et coupé en deux là où un vrai silence apparaît.
+//  2. Un bloc dont le son reste 20 dB sous ta voix est un bruit (chaise, porte, souffle) : il n'est pas transcrit.
+//  3. Chaque bloc est transcrit SÉPARÉMENT (modèle chargé une seule fois). Sur un long rush, Whisper décale
 //     ses temps de plusieurs secondes s'il écoute tout d'un coup ; bloc par bloc, chaque mot reste à sa place.
 // small (466 Mo, rapide) suffit en général ; medium (1,5 Go) est plus précis sur les noms propres.
 // Sortie : videos/<video>/transcription.json  { blocs: [{debut, fin, texte}], mots: [{texte, debut, fin, bloc}] }
@@ -15,19 +19,45 @@ import { abs, args, dire, dossierModeles, dossierTravail, dossierVideo, ecrireJs
 import { lireMontage } from "./lib/montage.mjs"
 
 const HALLUCINATIONS = /sous-titr|amara\.org|merci d'avoir regard|abonnez-vous|^\s*[♪.…]+\s*$/i
-const MARGE = 0.15 // secondes de son gardées autour de chaque bloc pour Whisper
+// inventions classiques de Whisper sur un bruit, quand c'est tout le texte du bloc (« - Merci. - Merci. »)
+const SEUL = /^(merci( beaucoup)?|au revoir|bye)$/
+const MARGE = 0.15     // secondes de son gardées autour de chaque bloc pour Whisper
+const LONG = 5         // un bloc plus long est revérifié avec un seuil plus haut (reprises collées)
+const PLUS_HAUT = 6    // dB ajoutés au seuil pour cette vérification
+const BRUIT = 20       // un bloc dont la crête reste 20 dB sous la voix est un bruit
 
-export async function blocsDeParole(wav, seuil, pause, duree) {
+async function silences(wav, seuil, pause, duree) {
   const r = await ffmpeg(["-nostats", "-i", wav, "-af", `silencedetect=noise=${seuil}dB:d=${pause}`, "-f", "null", "-"], { tolerer: true })
   const sil = []
   for (const l of r.erreurs.split("\n")) {
     const a = /silence_start: (-?[\d.]+)/.exec(l); if (a) sil.push([Math.max(0, +a[1]), duree])
     const b = /silence_end: ([\d.]+)/.exec(l); if (b && sil.length) sil.at(-1)[1] = +b[1]
   }
+  return sil
+}
+
+/** Passages parlés [début, fin]. Avec seuilHaut : les blocs de plus de LONG s sont recoupés là où un silence
+ *  apparaît au seuil plus haut (on garde 0,1 s de marge pour ne pas rogner une fin de mot). */
+export async function blocsDeParole(wav, seuil, pause, duree, seuilHaut = null) {
   const blocs = []; let t = 0
-  for (const [a, b] of sil) { if (a - t > 0.12) blocs.push([t, a]); t = b }
+  for (const [a, b] of await silences(wav, seuil, pause, duree)) { if (a - t > 0.12) blocs.push([t, a]); t = b }
   if (duree - t > 0.12) blocs.push([t, duree])
-  return blocs
+  if (seuilHaut == null || seuilHaut <= seuil || !blocs.some(([a, b]) => b - a > LONG)) return blocs
+  const haut = await silences(wav, seuilHaut, pause, duree)
+  return blocs.flatMap(([a, b]) => {
+    if (b - a <= LONG) return [[a, b]]
+    const coupes = haut.filter(([s, e]) => s > a + 0.3 && e < b - 0.3)
+    const morceaux = []; let d = a
+    for (const [s, e] of coupes) { morceaux.push([d, s + 0.1]); d = e - 0.1 }
+    morceaux.push([d, b])
+    return morceaux.filter(([x, y]) => y - x > 0.12)
+  })
+}
+
+/** Crête du son par tranche de 0,1 s, en dB (wav en 16 kHz). */
+async function cretes(wav) {
+  const r = await ffmpeg(["-nostats", "-i", wav, "-af", "asetnsamples=n=1600:p=0,astats=metadata=1:reset=1,ametadata=print:key=lavfi.astats.Overall.Peak_level", "-f", "null", "-"], { tolerer: true })
+  return [...r.erreurs.matchAll(/Peak_level=(\S+)/g)].map((m) => (Number.isFinite(Number(m[1])) ? Number(m[1]) : -120))
 }
 
 async function preparerWhisper(modele, langue, essai, travail, journal) {
@@ -54,8 +84,16 @@ export async function transcrire(id, o = {}) {
   journal("2/3 Repérage des passages parlés…")
   const { lufs } = await mesurerLufs(wav)
   const seuil = o.seuil != null ? Number(o.seuil) : Math.max(-62, Math.min(-30, Math.round((Number.isFinite(lufs) ? lufs : -30) - 20)))
-  const blocs = await blocsDeParole(wav, seuil, pause, duree)
-  journal(`   voix à ${Number.isFinite(lufs) ? lufs.toFixed(1) : "?"} LUFS, seuil ${seuil} dB : ${blocs.length} passages parlés`)
+  // niveau de référence de la voix : la crête dépassée par 10 % des tranches de 0,1 s (les mots les plus forts)
+  const crete = await cretes(wav)
+  const tri = [...crete].sort((x, y) => x - y)
+  const voix = tri.length ? tri[Math.floor(0.9 * (tri.length - 1))] : 0
+  const seuilHaut = o.seuil != null ? null : Math.min(seuil + PLUS_HAUT, Math.round(voix - 22), -30)
+  const tous = await blocsDeParole(wav, seuil, pause, duree, seuilHaut)
+  const creteBloc = ([a, b]) => { let m = -120; for (let i = Math.floor(a * 10); i < Math.ceil(b * 10) && i < crete.length; i++) m = Math.max(m, crete[i]); return m }
+  const bruits = crete.length ? tous.filter((x) => creteBloc(x) < voix - BRUIT) : []
+  const blocs = tous.filter((x) => !bruits.includes(x))
+  journal(`   voix à ${Number.isFinite(lufs) ? lufs.toFixed(1) : "?"} LUFS, seuil ${seuil} dB${seuilHaut != null && seuilHaut > seuil ? ` (${seuilHaut} dB dans les longs passages)` : ""} : ${blocs.length} passages parlés${bruits.length ? `, ${bruits.length} bruits ignorés` : ""}`)
   if (!blocs.length) stop("Aucune parole détectée. Essaie un seuil plus bas : --seuil -55")
   if (Number.isFinite(lufs) && lufs < -30) journal("   ta voix est très basse dans le rush : monte le gain du micro au prochain tournage (le rendu la remonte quand même).")
 
@@ -92,18 +130,21 @@ export async function transcrire(id, o = {}) {
       if (/^[.,!?…;:»)]+$/.test(t) && ws.length) { ws.at(-1).texte += t; continue }   // ponctuation seule : collée au mot d'avant
       ws.push({ texte: t, debut: +debut.toFixed(3), fin: +Math.max(fin, debut + 0.04).toFixed(3), bloc: k + 1 })
     }
-    // bruits notés par Whisper entre crochets ou parenthèses ([Bruit de porte], (rires)) : retirés
+    // bruits notés par Whisper entre crochets, parenthèses ou étoiles ([Bruit de porte], (rires), *soupir*) : retirés
     let dedans = false
     for (let i = ws.length - 1; i >= 0; i--) {
       const t = ws[i].texte
-      if (/[\])]$/.test(t)) dedans = true
-      const ouvre = /^[[(]/.test(t)
+      if (/[\])*][.,!?…]*$/.test(t)) dedans = true
+      const ouvre = /^[[(*]/.test(t)
       if (dedans) ws.splice(i, 1)
       if (ouvre) dedans = false
     }
+    // tirets de dialogue ajoutés par Whisper (« - Merci. ») : retirés
+    for (let i = ws.length - 1; i >= 0; i--) { ws[i].texte = ws[i].texte.replace(/^[-\u2013]+/, ""); if (!ws[i].texte) ws.splice(i, 1) }
     const texte = ws.map((w) => w.texte).join(" ").replace(/\s+([,.!?…])/g, "$1")
-    const court = b - a < 0.6 && /^(merci|au revoir|bye)[.!]?$/i.test(texte.trim())   // invention classique de Whisper sur un bruit
-    if (!ws.length || HALLUCINATIONS.test(texte) || court) { sortieBlocs.push({ debut: +a.toFixed(3), fin: +b.toFixed(3), texte: "" }); return }
+    const nu = [...new Set(texte.toLowerCase().split(/[.!?…]+/).map((s) => s.replace(/[^a-zàâçéèêëîïôûùüÿ' ]/g, "").trim()).filter(Boolean))]
+    const invente = nu.length === 1 && SEUL.test(nu[0])   // « Merci. » seul : invention classique de Whisper sur un bruit
+    if (!ws.length || HALLUCINATIONS.test(texte) || invente) { sortieBlocs.push({ debut: +a.toFixed(3), fin: +b.toFixed(3), texte: "" }); return }
     sortieBlocs.push({ debut: +a.toFixed(3), fin: +b.toFixed(3), texte })
     mots.push(...ws)
   })

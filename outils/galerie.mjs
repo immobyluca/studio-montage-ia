@@ -22,7 +22,6 @@ export async function galerie(o = {}) {
     const nettoyer = (x) => { for (const k of Object.keys(x)) { if (/^(t|au|deflou|t_\w+)$/.test(k)) delete x[k]; else if (Array.isArray(x[k])) x[k].forEach((e) => e && typeof e === "object" && nettoyer(e)) } }
     nettoyer(params)
     if (type === "liste") params.ouvert = 2
-    if (type === "signature" && !charte.signature?.nom) params.texte = "Ton nom et ton compte (mon-style/charte.json)"
     animations.push({ id: `g${i}`, type, debut: +(t + 0.15).toFixed(2), fin: +(t + SLOT - 0.1).toFixed(2), place: cat[type].place === "derriere" ? "devant" : cat[type].place, params, couche: "avant", masquer_sous_titres: true })
     etiquettes.push({ texte: cat[type].nom, debut: t, fin: t + SLOT })
     t += SLOT
@@ -32,7 +31,8 @@ export async function galerie(o = {}) {
   const st = charte.sous_titres ?? {}
   const D = {
     couche: "avant", duree: +t.toFixed(2), largeur: L, hauteur: H, detourage: false, fond: "linear-gradient(165deg, #2b2b2b 0%, #6b6b6b 55%, #a8a8a8 100%)",
-    charte: { mouvement: charte.mouvement, zones: charte.zones, signature: charte.signature },
+    // sans nom ni compte réglés, la galerie montre un exemple neutre (la vraie vidéo n'affiche que ce qui est réglé)
+    charte: { mouvement: charte.mouvement, zones: charte.zones, signature: { ...charte.signature, nom: charte.signature?.nom || "Ton nom", compte: charte.signature?.compte || "@toncompte" } },
     accroche: { texte: "Ton titre\nd'*accroche*", debut: 0, fin: ACC, style: charte.accroche?.style ?? "carte", y: V ? charte.accroche?.y_vertical ?? 282 : charte.accroche?.y_horizontal ?? 80 },
     mots, sous_titres: { actif: true, style: st.style ?? "pilule", y: V ? st.y_vertical ?? 1234 : st.y_horizontal ?? 900, mots_max: st.mots_max ?? 4, caracteres_max: st.caracteres_max ?? 24, masquer: [[0, ACC]] },
     animations, etiquettes,

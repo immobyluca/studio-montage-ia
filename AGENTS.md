@@ -2,6 +2,8 @@
 
 Ce fichier est pour toi, l'IA (Claude, ChatGPT, Codex ou autre). Le même texte existe en `CLAUDE.md` et en `AGENTS.md`. Lis-le en entier avant d'agir.
 
+**Où installer le studio : toujours sur le disque de l'ordinateur, dans Documents. Jamais sur un disque externe ni sur une clé USB**, même si tu as été lancé depuis l'un d'eux : sur ces disques (souvent en FAT32 ou exFAT), le téléchargement casse et les fichiers perdent leurs droits. Seuls les fichiers lourds des montages peuvent aller sur un disque externe (voir « Fichiers lourds » plus bas).
+
 ## Qui tu aides
 
 Un agent immobilier qui fait des vidéos pour Instagram, TikTok ou YouTube. Il filme au téléphone et veut un montage propre : coupes, sous-titres, titre d'accroche, zooms, animations, sons. Il n'est pas informaticien.
@@ -42,7 +44,7 @@ Vérifie : `node -v` (v22 ou plus) et `git --version`.
 
 ### Étape 2 : récupérer le studio
 
-Choisis un dossier simple, par exemple Documents :
+Dans Documents, sur le disque de l'ordinateur (pas sur un disque externe) :
 
 Mac :
 ```bash

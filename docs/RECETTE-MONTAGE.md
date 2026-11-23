@@ -5,14 +5,15 @@ Ces règles viennent de vrais montages de Reels, vérifiés image par image. Les
 ## 1. Coupes
 
 **Ce que fait `couper.mjs`**
-- Il repère les passages parlés au son (un silence = 0,45 s ou plus sous un seuil calé sur sa voix). Une coupe tombe toujours dans un silence, **jamais entre deux mots**.
+- `transcrire.mjs` repère les passages parlés au son (un silence = 0,45 s ou plus sous un seuil calé sur sa voix). Voix basse dans une pièce bruyante : chaque passage de plus de 5 s est revérifié avec un seuil 6 dB plus haut, pour que deux reprises ne restent pas collées. Les bruits (chaise, porte, souffle, 20 dB sous la voix) et les « Merci. » inventés par Whisper sont ignorés. Une coupe tombe toujours dans un silence, **jamais entre deux mots**.
 - Au rendu, il laisse **0,06 s avant** le premier son et **0,08 s après** le dernier : au moins 120 ms d'air entre deux phrases. Les pauses courtes à l'intérieur d'une phrase (respirations) sont gardées.
-- **Reprises** : quand une phrase recommence comme une phrase suivante (mêmes premiers mots, même dans un ordre un peu différent), il garde la **dernière prise complète**. C'est en général la plus fluide : l'agent s'est corrigé. Testé sur un rush de 8 min avec plus de 50 reprises : les prises choisies sont celles qu'un monteur avait gardées à la main.
-- Il écarte aussi les « euh » seuls, les consignes de tournage (« je recommence », « attends »), les sons très courts (moins de 0,5 s) et les phrases abandonnées (« Tout simplement parce que les… »).
+- **Reprises** : deux prises proches sont des reprises quand elles commencent par les mêmes mots (« donc », « et », « alors » au début ne comptent pas), ou quand elles disent la même idée autrement (au moins 3 mots de sens en commun). Il garde la **dernière prise complète**. C'est en général la plus fluide : l'agent s'est corrigé. Une phrase qui recommence au milieu d'un passage (« Pour faire ça… Pour faire ça, je vous ai créé… ») est coupée en deux avant le choix.
+- Il écarte aussi les « euh » seuls, les consignes de tournage (« je recommence », « attends »), les sons très courts (moins de 0,5 s), les phrases abandonnées (« Vous allez… ») et les bouts de phrase déjà dits en entier dans une prise gardée juste à côté.
+- Testé sur deux vrais rushs à voix basse (6 et 8 min, plus de 50 reprises chacun) : les prises gardées sont celles qu'un monteur avait choisies à la main, à 2 ou 3 doublons près sur le rush de 8 min.
 
 **Ce que TU dois vérifier** (l'outil ne peut pas le deviner)
 1. Lis toute la liste avec le brief sous les yeux.
-2. Une même idée dite sous deux formes différentes (« Déjà, les trends, il ne faut pas… » puis « Déjà premièrement, des trends tu peux en faire… ») : l'outil garde les deux. Choisis-en une (la plus claire, ou celle qui colle au script).
+2. Une même idée dite sous deux formes très différentes peut encore passer (« Déjà, les trends, il ne faut pas… » puis « Déjà premièrement, des trends tu peux en faire… »). Choisis-en une (la plus claire, ou celle qui colle au script). Vérifie aussi qu'une prise écartée comme « reprise » ne contenait pas une idée absente de la prise gardée.
 3. Garde toujours l'humour et l'appel à l'action de la fin.
 4. Choix entre plusieurs bonnes prises : par défaut la dernière. `node outils/couper.mjs <video> --choix energie` garde la plus énergique (volume moyen de la voix). Si l'agent hésite, propose d'écouter : dans le dashboard, un clic sur une prise la joue.
 5. Durée : 30 à 60 s pour un Reel, 90 s au maximum. Au-delà, propose ce qu'on peut enlever.
