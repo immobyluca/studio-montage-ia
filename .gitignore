@@ -1,0 +1,20 @@
+# Installé par npm install
+node_modules/
+# Tes vidéos et tes montages restent sur ton ordinateur
+a-monter/*
+!a-monter/.gitkeep
+videos/*
+!videos/.gitkeep
+finies/*
+!finies/.gitkeep
+# Fichiers générés
+outils/.bin/
+kit/.galerie/
+mon-style/galerie.*
+mon-style/logo/*
+!mon-style/logo/.gitkeep
+# Secrets et fichiers système
+.env
+.DS_Store
+Thumbs.db
+*.log

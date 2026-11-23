@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=__LARGEUR__, height=__HAUTEUR__" />
+    <title>Calque __COUCHE__</title>
+    <script src="assets/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/base.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <!-- Fichier généré par outils/calques.mjs à partir de kit/gabarit.html : ne pas le modifier à la main, il sera réécrit. -->
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUREE__" data-width="__LARGEUR__" data-height="__HAUTEUR__">
+      <div id="scene" class="clip" data-start="0" data-duration="__DUREE__" data-track-index="0" data-track-kind="graphics"></div>
+    </div>
+    <script id="donnees" type="application/json">__DONNEES__</script>
+    <script src="assets/moteur.js"></script>
+    <script src="assets/kit.js"></script>
+    <script>KIT.lancer(JSON.parse(document.getElementById("donnees").textContent))</script>
+  </body>
+</html>

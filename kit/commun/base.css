@@ -1,0 +1,86 @@
+/*
+ * Style de base du kit d'animations. Ne mets AUCUNE couleur ni police en dur ici :
+ * tout vient des variables générées depuis mon-style/charte.json (fichier style.css, écrit au rendu).
+ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { margin: 0; overflow: hidden; background: transparent; }
+body { font-family: "Texte", system-ui, sans-serif; color: var(--texte); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+#root { position: relative; width: 100%; height: 100%; }
+#scene { position: absolute; inset: 0; overflow: visible; }
+.abs { position: absolute; }
+.mot { display: inline-block; will-change: transform, filter, opacity; }
+.ill { position: absolute; inset: 0; visibility: hidden; }
+.titres { font-family: "Titres", "Texte", sans-serif; font-weight: var(--graisse-titres); letter-spacing: var(--approche-titres); }
+.chiffres { font-variant-numeric: tabular-nums; }
+
+/* Matière : surface sombre (texte clair) ou surface claire (texte sombre) */
+.surface { background: var(--surface); color: var(--texte); border-radius: var(--arrondi); box-shadow: var(--ombre); }
+.surface-claire { background: var(--clair); color: var(--texte-clair); border-radius: var(--arrondi); box-shadow: var(--ombre); }
+
+/* L'accent : *un mot* dans une capsule (une seule par moment) */
+.acc { position: relative; display: inline-block; font-family: "Accent", "Titres", sans-serif; font-weight: var(--graisse-accent); font-style: var(--style-accent);
+  padding: 0 0.16em; line-height: 1.12; z-index: 0; color: var(--texte-accent); }
+.acc > .acc-fond { position: absolute; inset: 0; border-radius: calc(var(--arrondi) * 0.4); background: var(--accent); z-index: -1; }
+.surface-claire .acc > .acc-fond { background: var(--surface); }
+.surface-claire .acc { --texte-accent: var(--texte); }
+
+/* Icônes (traits) */
+.ico { display: inline-flex; width: 1em; height: 1em; flex: none; }
+.ico svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Titre d'accroche */
+.accroche { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
+.accroche .carte { padding: 18px 34px 22px; text-align: center; max-width: calc(var(--largeur) - 120px); }
+.accroche .l { display: block; font-size: var(--taille-accroche); line-height: 1.08; }
+.accroche.gros .carte { background: none; box-shadow: none; color: var(--texte); text-shadow: 0 4px 30px rgba(0,0,0,.45); }
+
+/* Sous-titres mot à mot */
+.st-groupe { position: absolute; left: 0; right: 0; display: flex; justify-content: center; visibility: hidden; }
+.st-carte { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; max-width: calc(var(--largeur) - 180px); column-gap: 0.26em;
+  padding: 10px 32px 14px; font-family: "Titres", "Texte", sans-serif; font-weight: var(--graisse-titres); font-size: var(--taille-st); letter-spacing: -0.02em; line-height: 1.12; }
+.st-carte.pilule { background: var(--surface); border-radius: calc(var(--taille-st) * 0.8); box-shadow: var(--ombre); }
+.st-carte.contour { -webkit-text-stroke: 0; text-shadow: 0 0 2px #000, 0 2px 12px rgba(0,0,0,.65), 0 0 24px rgba(0,0,0,.35); }
+.st-mot { display: inline-block; white-space: pre; color: var(--texte); }
+
+/* Bandeau (une ligne, en haut) */
+.bandeau { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
+.chip { display: inline-flex; align-items: center; gap: 16px; padding: 12px 30px 15px 16px; border-radius: 999px; font-size: 42px; white-space: nowrap; }
+.chip.sans-num { padding-left: 30px; }
+.num { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 56px; height: 56px; border-radius: 50%;
+  background: var(--accent); color: var(--texte-accent); font-size: 32px; }
+
+/* Colonne d'éléments (cartes, liste, pour/contre) */
+.col { position: absolute; display: flex; flex-direction: column; gap: 16px; }
+.tuile { position: relative; display: flex; align-items: center; gap: 18px; padding: 16px 22px 18px; font-size: 36px; line-height: 1.12; }
+.tuile .t { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 62px; height: 62px; border-radius: calc(var(--arrondi) * 0.6);
+  background: var(--accent); color: var(--texte-accent); font-size: 34px; }
+.surface-claire.tuile .t { background: var(--surface); color: var(--texte); }
+.petit { display: block; font-family: "Texte", sans-serif; font-weight: 600; font-size: 0.68em; opacity: .7; margin-bottom: 2px; }
+.rond { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 48px; height: 48px; border-radius: 50%; font-size: 28px; margin-left: auto; }
+.rond.ok { background: var(--accent); color: var(--texte-accent); }
+.rond.non { background: var(--attention); color: var(--texte-attention); }
+.barre { position: absolute; left: -3%; right: -3%; top: 52%; height: 6px; border-radius: 3px; background: var(--attention); transform-origin: left center; }
+
+/* Compteur */
+.compteur { display: flex; flex-direction: column; align-items: center; padding: 22px 46px 30px; }
+.compteur .geant { font-size: 220px; line-height: .95; letter-spacing: -0.05em; }
+.compteur .legende { font-size: 38px; text-align: center; margin-top: 6px; }
+
+/* Schémas plein écran */
+.voile { position: absolute; inset: 0; background: var(--voile); }
+.titre-schema { position: absolute; left: 60px; right: 60px; text-align: center; font-size: 64px; line-height: 1.08; color: var(--texte); }
+.noeud { position: absolute; transform: translate(-50%, -50%); }
+.noeud > div { display: inline-flex; align-items: center; gap: 12px; padding: 12px 26px 14px 14px; border-radius: 999px; font-size: 36px; white-space: nowrap;
+  background: var(--surface-eteinte); color: var(--texte-eteint); box-shadow: var(--ombre); }
+.noeud .t { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 50%; background: var(--surface-eteinte); color: var(--texte); font-size: 28px; }
+.etape { display: flex; align-items: center; gap: 20px; padding: 22px 30px; font-size: 44px; border-radius: var(--arrondi); }
+.fleche { display: flex; justify-content: center; font-size: 56px; color: var(--texte); opacity: .8; }
+
+/* Appel à l'action et signature */
+.cta { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 40px 28px; text-align: center; }
+.cta .grand { font-size: 52px; line-height: 1.08; }
+.cta .ico-grand { font-size: 64px; }
+.signature { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.signature img { max-width: 360px; max-height: 220px; object-fit: contain; }
+.signature .nom { font-size: 56px; }
+.signature .compte { font-size: 36px; opacity: .75; }

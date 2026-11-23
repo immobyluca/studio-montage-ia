@@ -1,0 +1,37 @@
+{
+  "nom": "Style de départ (noir et blanc)",
+  "cree_depuis": "réglages par défaut du studio",
+  "couleurs": {
+    "surface": "#111111",
+    "texte": "#FFFFFF",
+    "accent": "#FFFFFF",
+    "texte_accent": "#111111",
+    "clair": "#FFFFFF",
+    "texte_clair": "#111111",
+    "attention": "#FFFFFF",
+    "texte_attention": "#111111",
+    "voile": "rgba(0, 0, 0, 0.62)",
+    "opacite_surface": 0.92
+  },
+  "polices": {
+    "titres": { "famille": "Inter", "fichier": "kit/commun/polices/Inter-Variable.ttf", "graisse": 800, "approche": "-0.03em" },
+    "texte": { "famille": "Inter", "fichier": "kit/commun/polices/Inter-Variable.ttf", "graisse": 600 },
+    "accent": { "famille": "Inter", "fichier": "kit/commun/polices/Inter-Variable.ttf", "graisse": 800, "italique": false }
+  },
+  "formes": { "arrondi": 28, "ombre": true },
+  "mouvement": { "duree": 0.6, "flou": 10, "montee": 22 },
+  "accroche": { "style": "carte", "taille": 64, "y_vertical": 282, "y_horizontal": 80 },
+  "sous_titres": { "style": "pilule", "taille": 54, "y_vertical": 1234, "y_horizontal": 900, "mots_max": 4, "caracteres_max": 24, "opacite_inactif": 0.55 },
+  "logo": null,
+  "signature": { "nom": "", "compte": "" },
+  "sons": {
+    "entree": "sons/entree_souffle.wav",
+    "texte": "sons/texte_bloop.wav",
+    "validation": "sons/validation_verre.wav",
+    "sortie": "sons/sortie_souffle-inverse.wav",
+    "notif": "sons/notif_verre.wav",
+    "impact": "sons/impact_boum.wav",
+    "volume": -18
+  },
+  "zones": {}
+}

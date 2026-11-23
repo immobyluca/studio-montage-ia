@@ -1,0 +1,92 @@
+{
+  "_lire": "Catalogue du kit. Chaque entrée : à quoi elle sert, où elle se place, ses paramètres et un exemple prêt à copier dans montage.json (champ animations). Les temps peuvent être des nombres (secondes sur la vidéo montée) ou des repères sur un mot : \"mot:mandat\", \"mot:mandat@12\" (après 12 s), \"mot:mandat-0.2\", \"fin:mandat\". Dans les textes, *un mot* entre astérisques passe dans la capsule d'accent (un seul par animation).",
+  "_places": {
+    "devant": "par-dessus la vidéo, dans une zone qui évite le visage (bandeau en haut, éléments sous le visage)",
+    "derriere": "derrière toi (il faut le détourage, sinon l'animation passe devant). Avec \"flou\": true, le fond derrière toi se floute",
+    "plein": "plein écran : la vidéo se floute et s'assombrit, l'animation prend toute la place"
+  },
+  "animations": {
+    "bandeau": {
+      "nom": "Bandeau",
+      "quand": "Annoncer une partie (« 1. Les trends, en minorité ») ou un mot clé, en une ligne au-dessus de la tête.",
+      "place": "devant", "masquer_sous_titres": false, "son": "texte",
+      "params": { "texte": "texte (avec *accent*)", "numero": "optionnel : 1, 2, 3…", "t_accent": "optionnel : quand la capsule s'allume" },
+      "exemple": { "type": "bandeau", "debut": "mot:déjà", "fin": "mot:ensuite-0.1", "params": { "numero": 1, "texte": "Les trends, *en minorité*" } }
+    },
+    "compteur": {
+      "nom": "Compteur",
+      "quand": "Un chiffre qui compte (prix, délai, nombre de visites, pourcentage).",
+      "place": "devant", "masquer_sous_titres": true, "son": "texte", "son_fin": "validation",
+      "params": { "de": "nombre de départ (0)", "a": "nombre d'arrivée", "prefixe": "avant le nombre", "suffixe": "après (« € », « % », « jours »)", "legende": "texte sous le nombre", "au": "optionnel : début du comptage", "duree_compte": "optionnel, en secondes", "zone": "bas (défaut), centre ou haut" },
+      "exemple": { "type": "compteur", "debut": "mot:vendu", "fin": "fin:jours+0.6", "params": { "de": 0, "a": 21, "suffixe": " jours", "legende": "pour *vendre*" } }
+    },
+    "liste": {
+      "nom": "Liste 1-2-3 qui se défloute",
+      "quand": "Annoncer « 3 choses » puis revenir sur la liste à chaque point : le point annoncé se défloute, les suivants restent flous.",
+      "place": "devant", "masquer_sous_titres": true, "son": "texte",
+      "params": { "titre": "optionnel : bandeau du haut (« *3 choses* à essayer »)", "elements": "liste de textes", "ouvert": "numéro du point qui se défloute (0 = tout flou, pour l'annonce)", "deflou": "optionnel : quand il se défloute", "zone": "bas (défaut) ou centre" },
+      "exemple": { "type": "liste", "debut": "mot:ensuite", "fin": "mot:ensuite+2.2", "params": { "titre": "*3 choses* à essayer", "elements": ["Les trends, *en minorité*", "Au moins *50 %* sur ta ville", "Les problèmes *de tes clients*"], "ouvert": 2 } }
+    },
+    "cartes": {
+      "nom": "Cartes",
+      "quand": "Énumérer 1 à 3 idées courtes, chacune arrive sur le mot qui la dit.",
+      "place": "devant", "masquer_sous_titres": true, "son": "texte",
+      "params": { "cartes": "liste de { texte, icone, t, petit, claire }", "zone": "bas (défaut) ou centre" },
+      "exemple": { "type": "cartes", "debut": "mot:adresses-0.3", "fin": "mot:enfin-0.1", "params": { "cartes": [ { "icone": "cafe", "texte": "Bonnes adresses", "t": "mot:adresses" }, { "icone": "etoile", "texte": "Les spots", "t": "mot:spots" }, { "icone": "users", "texte": "Vie du *quartier*", "t": "mot:vie" } ] } }
+    },
+    "pour-contre": {
+      "nom": "Pour / contre",
+      "quand": "Opposer le bon choix (coche) au mauvais (croix barrée).",
+      "place": "devant", "masquer_sous_titres": true, "son": "texte",
+      "params": { "oui": "texte du bon choix", "non": "texte du mauvais", "sous_oui": "petite ligne au-dessus", "sous_non": "petite ligne au-dessus", "t_oui": "optionnel", "t_non": "optionnel" },
+      "exemple": { "type": "pour-contre", "debut": "mot:abonnés", "fin": "mot:donc-0.1", "params": { "oui": "Des abonnés *de ta ville*", "non": "Des « Top ! » d'autres agents" } }
+    },
+    "barre": {
+      "nom": "Idée reçue barrée",
+      "quand": "Corriger une croyance : la fausse idée se barre, la bonne arrive dessous.",
+      "place": "devant", "masquer_sous_titres": true, "son": "texte",
+      "params": { "faux": "l'idée reçue", "vrai": "la bonne idée", "sous_faux": "optionnel (« Ce qu'on croit »)", "sous_vrai": "optionnel (« En vrai »)", "t_barre": "optionnel", "t_vrai": "optionnel" },
+      "exemple": { "type": "barre", "debut": "mot:croient", "fin": "mot:alors-0.1", "params": { "faux": "Le prix le plus haut attire", "vrai": "Le *bon prix* vend vite", "t_barre": "mot:faux" } }
+    },
+    "image": {
+      "nom": "Image",
+      "quand": "Montrer une photo (un bien, une capture d'annonce). Mets le fichier dans le dossier de la vidéo (images/).",
+      "place": "devant", "masquer_sous_titres": true, "son": "entree",
+      "params": { "fichier": "chemin depuis la racine du studio (videos/<video>/images/bien.jpg)", "legende": "optionnel", "zone": "centre (défaut), haut ou bas", "largeur": "optionnel, en pixels" },
+      "exemple": { "type": "image", "debut": "mot:annonce", "fin": "mot:annonce+2.5", "params": { "fichier": "videos/MA-VIDEO/images/annonce.jpg", "legende": "En ligne depuis *5 mois*" } }
+    },
+    "schema-cercle": {
+      "nom": "Schéma en cercle (plein écran)",
+      "quand": "Un cercle vicieux ou un cycle : chaque étape s'allume sur le mot qui la dit.",
+      "place": "plein", "masquer_sous_titres": true, "son": "entree",
+      "params": { "titre": "titre du schéma", "etapes": "liste de { texte, icone, t } (3 à 6)" },
+      "exemple": { "type": "schema-cercle", "debut": "mot:ils@5", "fin": "mot:donc@12-0.1", "params": { "titre": "Le cercle *de l'abandon*", "etapes": [ { "texte": "Trends", "icone": "reel", "t": "mot:comme" }, { "texte": "Vues", "icone": "oeil", "t": "mot:vues" }, { "texte": "Épuisement", "icone": "batterie", "t": "mot:épuiser" }, { "texte": "Arrêt", "icone": "stop", "t": "mot:arrêter" } ] } }
+    },
+    "schema-etapes": {
+      "nom": "Schéma en étapes (plein écran)",
+      "quand": "Un enchaînement A puis B puis C (des vues, puis des abonnés, puis des clients). La dernière étape ressort.",
+      "place": "plein", "masquer_sous_titres": true, "son": "entree",
+      "params": { "titre": "optionnel", "etapes": "liste de { texte, icone, t } (2 à 4)" },
+      "exemple": { "type": "schema-etapes", "debut": "mot:vues-0.3", "fin": "fin:clients+0.8", "params": { "titre": "Ce qui *compte*", "etapes": [ { "texte": "Des vues", "icone": "oeil" }, { "texte": "Des abonnés de ta ville", "icone": "pin" }, { "texte": "Des *clients*", "icone": "cle", "t": "mot:clients" } ] } }
+    },
+    "appel-action": {
+      "nom": "Appel à l'action",
+      "quand": "La fin : commenter, enregistrer, envoyer un message. Une flèche douce montre la zone des commentaires.",
+      "place": "devant", "masquer_sous_titres": true, "son": "notif",
+      "params": { "texte": "« Dis-le en *commentaire* »", "sous": "optionnel", "icone": "message, signet, telephone…", "fleche": "true ou false" },
+      "exemple": { "type": "appel-action", "debut": "mot:commentaire-0.4", "fin": "fin", "params": { "texte": "Dis-le en *commentaire*", "sous": "Je te réponds", "icone": "message" } }
+    },
+    "signature": {
+      "nom": "Signature de fin",
+      "quand": "Les dernières secondes : ton logo, ton nom et ton compte (réglés dans mon-style/charte.json).",
+      "place": "plein", "masquer_sous_titres": true, "son": "impact",
+      "params": { "texte": "optionnel : une phrase sous le nom" },
+      "exemple": { "type": "signature", "debut": "fin-2.5", "fin": "fin", "params": {} }
+    }
+  },
+  "toujours_la": {
+    "accroche": "Le titre d'accroche (montage.json → accroche) : lisible dès la 1re image, 2 à 3 s. Un retour à la ligne avec \\n, un mot en *accent*.",
+    "sous_titres": "Mot à mot, 4 mots au plus par groupe, le mot prononcé en plein, les autres atténués. Masqués pendant l'accroche et pendant les animations qui disent la même chose."
+  },
+  "icones": ["point", "oeil", "user", "users", "pin", "maison", "cle", "euro", "etoile", "coche", "croix", "message", "loupe", "signet", "bas", "droite", "reel", "telephone", "calendrier", "camera", "graphique", "ampoule", "batterie", "stop", "cafe", "contrat"]
+}

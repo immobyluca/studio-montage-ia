@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Studio de montage IA</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111'/%3E%3Cpath d='M12 9v14l11-7z' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="barre">
+      <div class="marque"><span class="logo">▶</span><span>Studio de montage IA</span></div>
+      <select id="choix-video" title="Changer de vidéo"></select>
+      <button id="btn-nouvelle" class="secondaire">+ Nouvelle vidéo</button>
+      <div class="espace"></div>
+      <span id="etat-outils" class="pastille">…</span>
+      <button id="btn-style" class="secondaire">Mon style</button>
+    </header>
+
+    <main id="principal">
+      <nav class="rail" id="rail"></nav>
+      <section class="panneau" id="panneau"></section>
+      <section class="lecteur">
+        <div class="onglets-lecteur">
+          <button data-source="apercu" class="actif">Aperçu</button>
+          <button data-source="rush">Rush</button>
+        </div>
+        <div class="cadre" id="cadre"><video id="video" controls playsinline preload="metadata"></video><div id="sans-video" class="vide">Pas encore d'aperçu.</div></div>
+        <div class="info-lecteur" id="info-lecteur"></div>
+      </section>
+    </main>
+
+    <aside class="dock">
+      <div class="journal-bloc">
+        <div class="titre-bloc">Travail en cours <span id="travail-etat"></span></div>
+        <pre id="journal">Rien en cours.</pre>
+      </div>
+      <div class="demande-bloc">
+        <div class="titre-bloc">Demander à mon IA</div>
+        <textarea id="demande" rows="3" placeholder="Ex. : remplace le compteur par une liste, enlève la prise 12, l'accroche doit dire « Ton prix est trop haut »"></textarea>
+        <div class="ligne">
+          <button id="btn-demande">Envoyer à mon IA</button>
+          <span class="aide">La demande est notée dans demandes.md, puis un message est copié : colle-le dans Claude ou ChatGPT.</span>
+        </div>
+      </div>
+    </aside>
+
+    <dialog id="dlg-nouvelle">
+      <form method="dialog" class="form">
+        <h2>Nouvelle vidéo</h2>
+        <label>Rush (dossier a-monter)<select id="nv-rush"></select></label>
+        <label>Sujet<input id="nv-sujet" placeholder="estimation, visite, conseil vendeur…" /></label>
+        <label>Format<select id="nv-format"><option value="">Automatique (selon le rush)</option><option value="9:16">9:16 (Reel, TikTok, Short)</option><option value="16:9">16:9 (YouTube)</option></select></label>
+        <p class="aide">Dépose d'abord ta vidéo dans le dossier <b>a-monter</b> du studio, puis recharge la page.</p>
+        <div class="ligne"><button value="annuler" class="secondaire">Annuler</button><button id="nv-creer" value="creer">Créer</button></div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
