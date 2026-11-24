@@ -18,7 +18,7 @@ Un agent immobilier qui fait des vidéos pour Instagram, TikTok ou YouTube. Il f
 
 **Mode guidé** : tu es dans une simple conversation, sans accès à son ordinateur. Alors :
 1. Demande-lui s'il est sur Mac ou Windows.
-2. Explique comment ouvrir le Terminal (Mac : Cmd + Espace, tape « Terminal », Entrée) ou PowerShell (Windows : touche Windows, tape « PowerShell », Entrée).
+2. Explique comment ouvrir le Terminal (Mac : Cmd + Espace, tape « Terminal », Entrée) ou PowerShell (Windows : touche Windows, tape « PowerShell », Entrée). Sur un Mac tout neuf, la recherche peut mettre quelques secondes à trouver « Terminal » : qu'il attende, ou qu'il passe par Finder, Applications, Utilitaires, Terminal.
 3. Donne UNE seule commande à la fois, dans un bloc de code, avec une phrase sur ce qu'elle fait.
 4. Demande-lui de la coller (clic droit ou Cmd+V / Ctrl+V), d'appuyer sur Entrée, puis de te renvoyer ce qui s'affiche (copie du texte ou capture d'écran).
 5. Lis la réponse avant de donner la suivante. Si ça a échoué, explique simplement et donne la correction.
@@ -29,15 +29,23 @@ Si tu ne sais pas dans quel mode tu es, essaie une commande sans risque (`node -
 
 ## 1. Installation (pas à pas)
 
-Commence par dire : « Je vais installer ton studio de montage. Ça prend 10 à 20 minutes, surtout des téléchargements. Rien ne sera publié. »
+Commence par dire : « Je vais installer ton studio de montage. Ça prend 10 à 20 minutes, surtout des téléchargements (jusqu'à 45 minutes sur un Mac neuf). Rien ne sera publié. »
 
 ### Étape 1 : les outils de base
 
 | | Mac | Windows |
 |---|---|---|
+| Outils d'Apple (Mac seulement, À FAIRE EN PREMIER) | Vérifie avec `xcode-select -p` (un chemin s'affiche : déjà installé). Sinon : `xcode-select --install`, puis attends la FIN de l'installation (voir ci-dessous) avant de passer à Homebrew | (rien à faire) |
 | Gestionnaire d'installation | Homebrew. Vérifie avec `brew -v`. S'il manque, l'agent doit lancer LUI-MÊME dans le Terminal (mot de passe demandé) : `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` puis suivre les 2 lignes « Next steps » qu'il affiche | winget (déjà présent sur Windows 10 et 11). Vérifie avec `winget -v`. S'il manque : installer « App Installer » depuis le Microsoft Store |
 | Node.js 22 ou plus | `brew install node` | `winget install -e --id OpenJS.NodeJS.LTS` |
-| Git | `xcode-select --install` (ou `brew install git`) | `winget install -e --id Git.Git` |
+| Git | Déjà fourni par les outils d'Apple (vérifie avec `git --version`), sinon `brew install git` | `winget install -e --id Git.Git` |
+
+**Sur un Mac neuf, préviens-le AVANT de lancer ces commandes.** Ce sont les trois blocages vus en test :
+1. `xcode-select --install` ouvre une fenêtre d'Apple, souvent cachée derrière les autres. S'il ne la voit pas, qu'il clique sur la nouvelle icône apparue dans le Dock. Il clique sur « Installer », puis sur « Accepter ». Le téléchargement prend 10 à 30 minutes. Attends qu'il te dise que la fenêtre annonce la fin, puis vérifie avec `xcode-select -p`.
+2. Si Homebrew affiche « Press any key when the installation has completed », c'est qu'il installe lui-même ces outils d'Apple. Il ne touche à rien tant que la fenêtre d'Apple n'a pas fini, sinon l'installation échoue plus loin. Ça n'arrive pas si le point 1 est fait avant.
+3. Le mot de passe demandé est celui de sa session sur le Mac. Rien ne s'affiche pendant la saisie, c'est normal. Il n'est retenu que 5 minutes : s'il est redemandé, il le retape, rien n'est cassé. Juste après, Homebrew attend un appui sur Entrée (« Press RETURN ») : qu'il appuie tout de suite.
+
+Si la fenêtre d'Apple répond que le logiciel « n'est pas disponible actuellement depuis le serveur de mise à jour », fais réessayer un peu plus tard. Si ça persiste, l'autre voie est de télécharger les « Command Line Tools » sur developer.apple.com, ce qui demande de se connecter avec son identifiant Apple : propose-la seulement s'il est d'accord, et ne lui fais jamais créer de compte.
 
 Sur Windows, après chaque `winget install`, il faut FERMER puis rouvrir PowerShell pour que la nouvelle commande soit trouvée.
 Vérifie : `node -v` (v22 ou plus) et `git --version`.
@@ -130,6 +138,7 @@ Il pourra te demander d'ajouter des choses. Fais-le proprement :
 |---|---|
 | `node` ou `ffmpeg` introuvable sur Windows juste après l'installation | Fermer et rouvrir PowerShell |
 | Windows : « l'exécution de scripts est désactivée » en tapant `npm` | Utiliser `npm.cmd` à la place de `npm` (ou double-cliquer sur `Ouvrir le studio.bat`) |
+| Mac : l'installation de Homebrew échoue, ou `git` est introuvable | Vérifier `xcode-select -p`. Si rien ne s'affiche, refaire le point 1 de l'étape 1 (outils d'Apple) jusqu'au bout, puis relancer Homebrew |
 | `npm install` refuse (droits) sur Mac | Ne jamais utiliser `sudo` : vérifier que le studio est dans Documents, pas dans un dossier système |
 | La transcription échoue | `node outils/verifier.mjs` ; sur Mac `brew install whisper-cpp` ; sur Windows `node outils/installer.mjs` |
 | Aucune parole détectée | Le son du rush est très bas : `node outils/transcrire.mjs <video> --seuil -55` |
